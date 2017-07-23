@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1500776631 source:c:\users\phoenix\documents\github\banking_system\banking system\main.cpp
+	<iostream>
+	<cstdlib>
+
