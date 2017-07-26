@@ -6,6 +6,8 @@
 #include <cctype>
 #include <cstdlib>
 #include <iomanip>
+#include <stdio.h>
+#include <time.h>
 
 using namespace std;
 
@@ -16,6 +18,9 @@ struct account
     int accountId;
     long long int phoneNumber;
     string accountType;
+    string month;
+    string day;
+    string year;
     int amount;
 };
 
@@ -36,6 +41,7 @@ void checkStrings(string str);
 
 int main()
 {
+
     vector<account> accounts;
 
     int option;
@@ -173,6 +179,9 @@ void getAccounts(vector<account>& acc)
         inFile >> tmp.lastName;
         inFile >> tmp.phoneNumber;
         inFile >> tmp.amount;
+        inFile >> tmp.month;
+        inFile >> tmp.day;
+        inFile >> tmp.year;
         inFile.ignore(1000,'\n');
         inFile.ignore(1000,'\n');
 
@@ -271,16 +280,32 @@ void openAccount(vector<account>& acc)
         tmp.accountType = "Saving";
     }
 
+    //Date
+    time_t now;
+    struct tm * today;
+
+    time(&now);
+    today = localtime(&now);
+
+    str = asctime(today);
+
+    tmp.month = str.substr(4,3);
+    tmp.day = str.substr(8,2);
+    tmp.year = str.substr(20,4);
+
     //Amount
     cout << "Please input your initial desposit: " << endl;
     cin >> tmp.amount;
 
     acc.push_back(tmp);
 
+    saveAccounts(acc);
+
     cout << endl << "Account has been made" << endl;
 
     cout << "Press 0 if you wish return to the main menu" << endl;
     cin >> num;
+
 
     if(num == 0)
     {
@@ -306,7 +331,10 @@ void saveAccounts(vector<account>& acc)
         << acc.at(i).firstName << " "
         << acc.at(i).lastName << " "
         << acc.at(i).phoneNumber << " "
-        << acc.at(i).amount << endl;
+        << acc.at(i).amount << " "
+        << acc.at(i).month << " "
+        << acc.at(i).day << " "
+        << acc.at(i).year << endl;
     }
 
     outFile.close();
@@ -317,10 +345,12 @@ void saveAccounts(vector<account>& acc)
 void despositAmount(vector<account>& acc)
 {
     system("cls");
+    //cout <<
 }
 
 void displayAccounts(vector<account>& acc)
 {
+    int num;
 
     system("cls");
     cout << endl;
@@ -336,7 +366,17 @@ void displayAccounts(vector<account>& acc)
         << acc.at(i).firstName << " "
         << acc.at(i).lastName << " "
         << acc.at(i).phoneNumber << " "
-        << acc.at(i).amount <<  endl;
+        << acc.at(i).amount << " "
+        << acc.at(i).month << " " << acc.at(i).day << " " <<  acc.at(i).year << endl;
+    }
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+
+    if(num == 0)
+    {
+        mainMenu(acc);
     }
 }
 
@@ -363,10 +403,8 @@ void checkStrings(string str)
                 check = true;
                 str = checkstr;
             }
-
         }
     }
 
     return;
 }
-

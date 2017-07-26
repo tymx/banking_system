@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1501108196 source:c:\users\phoenix\documents\github\banking_system\banking system\main.cpp
+1501113383 source:c:\users\phoenix\documents\github\banking_system\banking system\main.cpp
 	<iostream>
 	<fstream>
 	<ostream>
@@ -8,4 +8,6 @@
 	<cctype>
 	<cstdlib>
 	<iomanip>
+	<stdio.h>
+	<time.h>
 
