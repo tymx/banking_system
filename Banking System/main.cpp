@@ -100,7 +100,7 @@ int welcomeScreen(int counter)
     }
     else
     {
-        cout << "Select an option: " << endl;
+        cout << endl << "Select an option: " << endl;
         cout << "1: View Main Menu" << endl;
         cout << "99: Exit Program" << endl;
     }
@@ -119,6 +119,18 @@ void devScreen()
     cout << "Taylor Martinez" << endl << endl;
 
     cout << "Guide:" << endl;
+    cout << "With this program you will be able to: " << endl;
+    cout << "- Make an Account with MDC Banking" << endl;
+    cout << "- Make deposits and withdrawals into and from the account" << endl;
+    cout << "- Be able to see all accounts and their information" << endl;
+    cout << "- Be able to see all transactions that has been done with MDC Banking" << endl;
+    cout << "- Be able to take out loans" << endl;
+    cout << "- Be able to search for specific accounts in the system" << endl;
+    cout << "- Be able to transfer money from one account to another of your choosing" << endl;
+
+    cout << endl << "While using this program: " << endl;
+    cout << "- Enter a number when asked for one. Characters won't be allowed in numeric fields" << endl;
+    cout << "- Enter a character when asked for one. Numbers won't be allowed in character fields" << endl;
 
     return;
 }
