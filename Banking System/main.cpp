@@ -45,12 +45,12 @@ string TRANFILENAME = "transactions.txt";
 int welcomeScreen(int counter);
 void devScreen();
 void mainMenu(vector<account>& acc, vector<transaction> tran);
-void selectMenu(int opt, vector<account>& acc, vector<transaction> tran);
+void selectMenu(int opt, vector<account>& acc, vector<transaction>& tran);
 void getAccounts(vector<account>& acc);
 void getTransactions(vector<transaction>& tran);
 void openAccount(vector<account>& acc, vector<transaction> tran);
-void saveAccounts(vector<account>& acc, vector<transaction>& tran);
-void saveTransactions(vector<account>& acc, vector<transaction>& tran);
+void saveAccounts(vector<account>& acc);
+void saveTransactions(vector<transaction> tran);
 void depositAmount(vector<account>& acc, vector<transaction>& tran);
 void withdrawAmount(vector<account>& acc, vector<transaction>& tran);
 void displayAccounts(vector<account> acc, vector<transaction> tran);
@@ -68,12 +68,7 @@ int main()
     int option;
     int i = 0;
 
-    ifstream existFile(ACCOUNTFILENAME.c_str());
-    if(existFile)
-    {
-        getAccounts(accounts);
-        getTransactions(transactions);
-    }
+    getAccounts(accounts);
 
     do
     {
@@ -156,30 +151,25 @@ void mainMenu(vector<account>& acc, vector<transaction> tran)
     return;
 }
 
-void selectMenu(int opt, vector<account>& acc, vector<transaction> tran)
+void selectMenu(int opt, vector<account>& acc, vector<transaction>& tran)
 {
 
     if(opt == 1)
     {
         openAccount(acc, tran);
-        saveAccounts(acc,tran);
-        saveTransactions(acc,tran);
     }
 
     if (opt == 2)
     {
         depositAmount(acc, tran);
-        saveAccounts(acc,tran);
-        saveTransactions(acc,tran);
     }
     if(opt == 3)
     {
         withdrawAmount(acc, tran);
-        saveAccounts(acc,tran);
     }
     if(opt == 4)
     {
-        //displayAccounts(acc, tran);
+        displayAccounts(acc, tran);
     }
     if(opt == 5)
     {
@@ -220,28 +210,27 @@ void getAccounts(vector<account>& acc)
 }
 void getTransactions(vector<transaction>& tran)
 {
-    ifstream inFile;
-    transaction tmpp;
+    ifstream myFile;
+    transaction tmp;
 
-    inFile.open(TRANFILENAME.c_str());
+    myFile.open("transactions.txt");
 
-    while(!inFile.eof())
+    while(!myFile.eof())
     {
-        inFile >> tmpp.accountID;
-        inFile >> tmpp.transactionType;
-        inFile >> tmpp.firstName;
-        inFile >> tmpp.lastName;
-        inFile >> tmpp.amount;
-        inFile >> tmpp.month;
-        inFile >> tmpp.day;
-        inFile >> tmpp.year;
-        inFile.ignore(1000,'\n');
-        inFile.ignore(1000,'\n');
+        myFile >> tmp.accountID;
+        myFile >> tmp.transactionID;
+        myFile >> tmp.transactionType;
+        myFile >> tmp.firstName;
+        myFile >> tmp.lastName;
+        myFile >> tmp.amount;
+        myFile >> tmp.month;
+        myFile >> tmp.day;
+        myFile >> tmp.year;
 
-        tran.push_back(tmpp);
+        tran.push_back(tmp);
     }
 
-    inFile.close();
+    myFile.close();
 
     return;
 }
@@ -360,7 +349,7 @@ void openAccount(vector<account>& acc, vector<transaction> tran)
 
     acc.push_back(tmp);
 
-    saveAccounts(acc,tran);
+    saveAccounts(acc);
 
     cout << endl << "Account has been made" << endl;
 
@@ -377,51 +366,112 @@ void openAccount(vector<account>& acc, vector<transaction> tran)
 
 }
 
-void saveAccounts(vector<account>& acc, vector<transaction>& tran)
+void saveAccounts(vector<account>& acc)
 {
+
     ofstream outFile;
 
     account tmp;
 
-    outFile.open(ACCOUNTFILENAME.c_str());
+    int len;
 
-    for(int i = 0; i < acc.size(); ++i)
+    outFile.open("accounts.txt");
+
+    for(int i = 0; i < acc.size()-1; ++i)
+
     {
+
         outFile << acc.at(i).accountId << " "
+
         << acc.at(i).accountType << " "
+
         << acc.at(i).firstName << " "
+
         << acc.at(i).lastName << " "
+
         << acc.at(i).phoneNumber << " "
-        << acc.at(i).amount << " "
-        << acc.at(i).month << " "
-        << acc.at(i).day << " "
-        << acc.at(i).year << endl;
+
+        << acc.at(i).amount << endl;
+
     }
 
+    len = acc.size()-1;
+
+        outFile << acc.at(len).accountId << " "
+
+        << acc.at(len).accountType << " "
+
+        << acc.at(len).firstName << " "
+
+        << acc.at(len).lastName << " "
+
+        << acc.at(len).phoneNumber << " "
+
+        << acc.at(len).amount;
+
+
+
     outFile.close();
+
+
 
     return;
 }
 
-void saveTransactions(vector<account>& acc, vector<transaction>& tran)
+void saveTransactions(vector<transaction> tran)
 {
-    ofstream outFile;
+    int len;
 
-    outFile.open(TRANFILENAME.c_str());
+    ofstream outiFile;
 
-    for(int i = 0; i < tran.size(); ++i)
+    outiFile.open(TRANFILENAME.c_str());
+
+    for(int i = 0; i < tran.size()-1; ++i)
+
     {
-        outFile << tran.at(i).accountID << " "
+
+        outiFile << tran.at(i).accountID << " "
+
         << tran.at(i).transactionID << " "
+
         << tran.at(i).transactionType << " "
+
         << tran.at(i).firstName << " "
+
+        << tran.at(i).lastName << " "
+
         << tran.at(i).amount << " "
+
         << tran.at(i).month << " "
+
         << tran.at(i).day << " "
+
         << tran.at(i).year << endl;
+
     }
 
-    outFile.close();
+    len = tran.size()-1;
+
+        outiFile << tran.at(len).accountID << " "
+
+        << tran.at(len).transactionID << " "
+
+        << tran.at(len).transactionType << " "
+
+        << tran.at(len).firstName << " "
+
+        << tran.at(len).lastName << " "
+
+        << tran.at(len).amount << " "
+
+        << tran.at(len).month << " "
+
+        << tran.at(len).day << " "
+
+        << tran.at(len).year;
+
+
+    outiFile.close();
 
     return;
 }
@@ -484,6 +534,9 @@ void depositAmount(vector<account>& acc, vector<transaction>& tran)
 
     tran.push_back(tmp);
 
+    saveTransactions(tran);
+    saveAccounts(acc);
+
     cout << "Press 0 if you wish return to the main menu" << endl;
     cin >> num;
 
@@ -524,10 +577,18 @@ void withdrawAmount(vector<account>& acc, vector<transaction>& tran)
     tmp.firstName = acc.at(ID).firstName;
     tmp.lastName = acc.at(ID).lastName;
 
-    tmp.transactionID++;
+    if(foundTran(tran,numID) != 0)
+    {
+        tmp.transactionID = foundTran(tran,numID) + 1;
+    }
+    else
+    {
+        tmp.transactionID++;
+    }
+
     tmp.accountID = acc.at(ID).accountId;
 
-    tmp.transactionType = "Deposit";
+    tmp.transactionType = "Withdrawal";
 
     //Date
     time_t now;
@@ -547,6 +608,9 @@ void withdrawAmount(vector<account>& acc, vector<transaction>& tran)
 
     tran.push_back(tmp);
 
+    saveTransactions(tran);
+    saveAccounts(acc);
+
     cout << "Press 0 if you wish return to the main menu" << endl;
     cin >> num;
 
@@ -559,7 +623,7 @@ void withdrawAmount(vector<account>& acc, vector<transaction>& tran)
     return;
 }
 
-void displayAccounts(vector<account>& acc, vector<transaction> tran)
+void displayAccounts(vector<account> acc, vector<transaction> tran)
 {
     int num;
 
@@ -593,6 +657,8 @@ void displayAccounts(vector<account>& acc, vector<transaction> tran)
 void displayTransactions(vector<account>& acc, vector<transaction> tran)
 {
     int num;
+
+    getTransactions(tran);
 
     system("cls");
     for(unsigned int i = 0; i < tran.size(); ++i)
