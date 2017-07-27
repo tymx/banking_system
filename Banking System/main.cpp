@@ -6,6 +6,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <iomanip>
+#include <limits>
 #include <stdio.h>
 #include <time.h>
 
@@ -192,14 +193,14 @@ void getAccounts(vector<account>& acc)
 
     return;
 }
-
+//Function by Taylor Martinez. The function opens a new account. User must input data into string or numeric fields.
 void openAccount(vector<account>& acc)
 {
     account tmp;
     string str;
     bool check = false;
-    int counter = 1;
-    int num;
+    int counter = 0;
+    long long int num;
     int numID = 0;
 
     system("cls");
@@ -220,25 +221,22 @@ void openAccount(vector<account>& acc)
     cout << "Enter phone number: " << endl;
     cin >> tmp.phoneNumber;
 
-    /*while(!cin.fail())
+    while(cin.fail())
     {
         cin.clear();
-        cin.ignore(1000,'\n');
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "You cannot enter a character in this field. Enter numbers only" << endl;
         cout << "Please enter information in field again" << endl;
-        cin.ignore(1000,'\n');
         cin >> tmp.phoneNumber;
         cin.ignore(1000,'\n');
-    }*/
+    }
 
-    check = false;
-
-    /*while(!check)
+    while(!check)
     {
 
         num = tmp.phoneNumber;
 
-        while(num >= 0)
+        while(num != 0)
         {
             num /= 10;
             counter++;
@@ -255,9 +253,9 @@ void openAccount(vector<account>& acc)
             check = true;
         }
 
-        counter = 1;
+        counter = 0;
 
-    }*/
+    }
 
     //Account ID
 
@@ -296,6 +294,16 @@ void openAccount(vector<account>& acc)
     //Amount
     cout << "Please input your initial desposit: " << endl;
     cin >> tmp.amount;
+
+    while(cin.fail())
+    {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+        cout << "Please enter information in field again" << endl;
+        cin >> tmp.amount;
+        cin.ignore(1000,'\n');
+    }
 
     acc.push_back(tmp);
 
@@ -345,7 +353,11 @@ void saveAccounts(vector<account>& acc)
 void despositAmount(vector<account>& acc)
 {
     system("cls");
-    //cout <<
+
+}
+void withdrawAmount(vector<account>& acc)
+{
+
 }
 
 void displayAccounts(vector<account>& acc)
@@ -380,7 +392,7 @@ void displayAccounts(vector<account>& acc)
     }
 }
 
-//Program by Taylor Martinez. Checks to see if a string has any numbers within
+//Function by Taylor Martinez. Checks to see if a string has any numbers within
 void checkStrings(string str)
 {
     bool check = false;
