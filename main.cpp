@@ -119,7 +119,7 @@ int main()
 
     return 0;
 }
-///Taylor
+//Function by Taylor Martinez. Function outputs the welcome menu.
 int welcomeScreen(int counter)
 {
     int opt;
@@ -145,7 +145,7 @@ int welcomeScreen(int counter)
 
     return opt;
 }
-///Taylor
+//Function by Taylor Martinez. Function outputs the Developers and Guide menu
 void devScreen()
 {
     system("cls");
@@ -170,7 +170,7 @@ void devScreen()
 
     return;
 }
-///Taylor
+//Function by Taylor Martinez. Function outputs the main menu
 void mainMenu(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     int option;
@@ -201,7 +201,7 @@ void mainMenu(vector<account>& acc, vector<loans>& loan, vector<transaction>& tr
 
     return;
 }
-///Taylor
+//Function by Taylor Martinez. Function allows user to select from main menu.
 void selectMenu(int opt, vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
 
@@ -263,7 +263,7 @@ void selectMenu(int opt, vector<account>& acc, vector<loans>& loan, vector<trans
 
     return;
 }
-///Taylor
+//Function by Taylor Martinez. Function grabs account info. from account file.
 void getAccounts(vector<account>& acc)
 {
     ifstream inFile;
@@ -291,7 +291,7 @@ void getAccounts(vector<account>& acc)
 
     return;
 }
-///Taylor
+//Function by Taylor Martinez. Function grabs the transactions from the transaction file.
 void getTransactions(vector<transaction>& tran)
 {
     ifstream inFile;
@@ -318,7 +318,7 @@ void getTransactions(vector<transaction>& tran)
 
     return;
 }
-///Taylor
+//Function by Taylor Martinez. Function opens an account for user and adds it to the list of accounts
 void openAccount(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     account tmp;
@@ -448,7 +448,7 @@ void openAccount(vector<account>& acc, vector<loans>& loan, vector<transaction>&
     return;
 
 }
-///Taylor
+//Function by Taylor Martinez. Function saves account info into file.
 void saveAccounts(vector<account>& acc)
 {
     ofstream outFile;
@@ -485,6 +485,7 @@ void saveAccounts(vector<account>& acc)
 
     return;
 }
+//Function by Taylor Martinez. Function saves the transactions into its own file.
 void saveTransactions(vector<transaction>& tran)
 {
     ofstream outFile;
@@ -521,7 +522,7 @@ void saveTransactions(vector<transaction>& tran)
 
     return;
 }
-///Taylor
+//Function by Taylor Martinez. Function deposits money amount into account amount and adds the transaction into the transaction list
 void depositAmount(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     int ID;
@@ -596,7 +597,7 @@ void depositAmount(vector<account>& acc, vector<loans>& loan, vector<transaction
     return;
 
 }
-///Taylor
+//Function by Taylor Martinez. Function withdraws money amount from account amount and adds the transaction into the transaction list
 void withdrawAmount(vector<account>& acc,vector<loans>& loan,  vector<transaction>& tran)
 {
     int ID;
@@ -663,7 +664,7 @@ void withdrawAmount(vector<account>& acc,vector<loans>& loan,  vector<transactio
 
     return;
 }
-///Taylor
+//Function by Taylor Martinez. Function outputs all accounts on screen.
 void displayAccounts(vector<account>& acc, vector<loans>& loan, vector<transaction>&tran)
 {
 
@@ -702,7 +703,7 @@ void displayAccounts(vector<account>& acc, vector<loans>& loan, vector<transacti
     }
 
 }
-///Taylor
+//Function by Taylor Martinez. Function outputs all transactions on screen.
 void displayTransactions(vector<account>& acc, vector<loans>& loan, vector<transaction> tran)
 {
     int num;
@@ -868,7 +869,7 @@ void displayTransactions(vector<account>& acc, vector<loans>& loan, vector<trans
     }
 }
 
-///Taylor
+//Function by Taylor Martinez. Function checks if a number is inside the string.
 void checkStrings(string str)
 {
     bool check = false;
