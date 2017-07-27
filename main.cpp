@@ -255,7 +255,9 @@ void selectMenu(int opt, vector<account>& acc, vector<loans>& loan, vector<trans
        transferAcc(acc, loan, tran);
     }
     if(opt == 0)
+    {
         return;
+    }
 
     if(opt > 10 || opt < 1)
         cout << "Please enter a correct option" << endl;
@@ -909,8 +911,8 @@ void eraseAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tr
     cout << "Please enter the account number to delete: ";
     cin >> i;
 
-    foundAcc(acc, i);
-    if(i == -1)
+    num = foundAcc(acc, i);
+    if(num == -1)
     {
         cout << "Record was not found" << endl;
         return;
@@ -918,7 +920,7 @@ void eraseAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tr
 
     cout << endl;
 
-    cout << "Would you like to delete the account under " << acc.at(i).firstName << " " << acc.at(i).lastName << endl;
+    cout << "Would you like to delete the account under " << acc.at(num).firstName << " " << acc.at(num).lastName << endl;
 
     cout << endl;
 
