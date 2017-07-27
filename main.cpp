@@ -1,3 +1,4 @@
+
 //Angel Castro and Taylor Martinez COP 1334
 //Final project::Banking System
 
@@ -900,7 +901,7 @@ void checkStrings(string str)
 
     return;
 }
-///Angel
+//Function by Angel Castro. Erase account based on account number.
 void eraseAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     int i;
@@ -954,15 +955,15 @@ void eraseAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tr
     }
 
 }
-///Angel
+//Function by Angel Castro. Outputs loan menu
 int showLoanMenu()
 {
     int opt;
 
     cout << endl;
-    cout << "************************************************************************************************************************" << endl;
-    cout << "                                                    Loan Menu                                                      " << endl;
-    cout << "************************************************************************************************************************" << endl;
+    cout << "***********************************************" << endl;
+    cout << "                  Loan Menu                    " << endl;
+    cout << "***********************************************" << endl;
     cout << endl;
 
     cout << "Enter 1: Loan Application" << endl;
@@ -974,7 +975,7 @@ int showLoanMenu()
     return opt;
 
 }
-///Angel
+//Function by Angel Castro. Gets loan information from text file.
 void getLoanData(vector<loans>& loan)
 {
     ifstream myFile;
@@ -994,7 +995,7 @@ void getLoanData(vector<loans>& loan)
 
     myFile.close();
 }
-///Angel
+//Function by Angel Castro. save loan information into text file.
 void saveLoanData(vector<loans> loan)
 {
     ofstream saveFile;
@@ -1021,7 +1022,7 @@ void saveLoanData(vector<loans> loan)
         saveFile.close();
 
 }
-///Angel
+//Function by Angel Castro. Function includes creation, payments and display of loans.
 void loanProcess(vector<loans>& loan, vector<account>& acc, vector<transaction>& tran)
 {
     int opt;
@@ -1038,6 +1039,7 @@ void loanProcess(vector<loans>& loan, vector<account>& acc, vector<transaction>&
     {
 
         opt = showLoanMenu();
+        //Apply for loan
         if(opt ==1)
         {
             system("cls");
@@ -1280,6 +1282,7 @@ void loanProcess(vector<loans>& loan, vector<account>& acc, vector<transaction>&
 
             cout << endl;
             }
+        //Display loan information
         if(opt == 3)
         {
             system("cls");
@@ -1419,7 +1422,7 @@ void loanProcess(vector<loans>& loan, vector<account>& acc, vector<transaction>&
 
 }
 
-///Angel
+// Function by Angel Castro. Searches account based on account number and date.
 void searchAcc(vector<account> acc, vector<loans> loan, vector<transaction> tran)
 {
     int opt;
@@ -1529,7 +1532,7 @@ void searchAcc(vector<account> acc, vector<loans> loan, vector<transaction> tran
     }
 }
 
-///Angel
+//Function by Angel Castro. Returns index of account number.
 int foundAcc(vector<account>& acc, int accNum)
 {
 
@@ -1541,7 +1544,7 @@ int foundAcc(vector<account>& acc, int accNum)
     return -1;
 }
 
-///Taylor
+// Function by Taylor Martinez. Returns index of account number for transactions.
 int foundTran(vector<transaction>& tran, int tranNum)
 {
         int counter = 0;
@@ -1558,7 +1561,7 @@ int foundTran(vector<transaction>& tran, int tranNum)
 
 }
 
-///Angel
+//Function b6y Angel Castro. Returns index based on date
 int foundDay(vector<transaction>& tran, string mon, string day, string year)
 {
     for(int i=0; i < tran.size(); i++)
@@ -1569,7 +1572,7 @@ int foundDay(vector<transaction>& tran, string mon, string day, string year)
     return -1;
 }
 
-///Angel
+//Function by Angel Castro. Transfer funds from account to the other
 void transferAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     int accNo1;
