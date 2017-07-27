@@ -1,17 +1,28 @@
+//Angel Castro COP 1334
+//Final project::Banking System
+
 #include <iostream>
-#include <string>
 #include <fstream>
+#include <ostream>
+#include <vector>
+#include <string>
+#include <cctype>
 #include <cstdlib>
 #include <iomanip>
-#include <vector>
 #include <ctime>
 #include <cmath>
 
-
 using namespace std;
 
-
-
+struct account
+{
+    string firstName;
+    string lastName;
+    int accountId;
+    long long int phoneNumber;
+    string accountType;
+    int amount;
+};
 struct loans
 {
     string nameFirst;
@@ -25,62 +36,60 @@ struct loans
 
 };
 
-void eraseAcc(vector<loans>& players);
-void loanProcess(vector<loans>& loan);
+string ACCOUNTFILENAME = "accounts.txt";
+
+int welcomeScreen(int counter);
+void devScreen();
+void mainMenu(vector<account>& acc, vector<loans>& loan);
+void selectMenu(int opt, vector<account>& acc, vector<loans>& loan);
+void getAccounts(vector<account>& acc);
+void openAccount(vector<account>& acc, vector<loans>& loan);
+void saveAccounts(vector<account>& acc);
+void despositAmount(vector<account>& acc);
+void withdrawAmount();
+void displayAccounts(vector<account>& acc, vector<loans>& loan);
+void displayTransactions();
+void checkStrings(string str);
+void eraseAcc(vector<account>& acc, vector<loans>& loan);
+void loanProcess(vector<loans>& loan, vector<account>& acc);
 void getLoanData(vector<loans>& loan);
 void saveLoanData(vector<loans> loan);
 int showLoanMenu();
-int showMenu();
 int found(vector<loans> loan, int accNum);
-void searchLoan(vector<loans> loan);
-void transferLoan(vector<loans> loan);
+void searchAcc(vector<account> acc, vector<loans> loan);
+void transferAcc(vector<account>& acc, vector<loans>& loan);
+int foundAcc(vector<account>& acc, int accNum);
 
 int main()
 {
-    int opt;
-    int index;
-
-
+    vector<account> accounts;
     vector<loans> loan;
-    bool quit = true;
 
-    //Initializing loan vector from text file
+    int option;
+    int i = 0;
+
+    //ifstream existFile(ACCOUNTFILENAME.c_str());
+   // if(existFile)
+   //// {
+    //    getAccounts(accounts);
+    //}
+    getAccounts(accounts);
     getLoanData(loan);
 
-    while(quit)
+    do
     {
-        //Displaying menu
-        opt = showMenu();
-        if(opt == 1)
+        option = welcomeScreen(i);
+        if(option == 1 && i == 0)
         {
-            system("cls");
-            eraseAcc(loan);
+            devScreen();
         }
-        if(opt==2)
+        if((option == 2 && i == 0) || (option == 1 && i != 0))
         {
-            system("cls");
-            loanProcess(loan);
+            mainMenu(accounts, loan);
+            option = 99;
         }
-        if(opt==3)
-        {
-            system("cls");
-            searchLoan(loan);
-        }
-        if(opt==4)
-        {
-            system("cls");
-            transferLoan(loan);
-            cout << endl;
-        }
-        if(opt == 0)
-            quit = false;
-        if(opt > 4 || opt < 0)
-        {
-            system("cls");
-            cout << "Please enter a correct option" << endl;
-            cout << endl;
-        }
-    }
+        i++;
+    }while(option != 99);
 
     system("cls");
     //Saves data inputted
@@ -89,19 +98,387 @@ int main()
     return 0;
 }
 
-//Erases account based on index, needs to be change into account
-void eraseAcc(vector<loans>& loan)
+int welcomeScreen(int counter)
 {
-    int i;
     int opt;
 
+    if(counter == 0)
+    {
+        cout << "**********************************************" << endl;
+        cout << "        Welcome to MDC Banking System         " << endl;
+        cout << "**********************************************" << endl;
+        cout << "1. View the Developers and Guide" << endl;
+        cout << "2. View the Main Menu" << endl;
+    }
+    else
+    {
+        cout << endl;
+        cout << "Select an option: " << endl;
+        cout << "1: View Main Menu" << endl;
+        cout << "99: Exit Program" << endl;
+    }
 
-    cout << "Please enter index of the account to delete: ";
-    cin >> i;
+
+    cin >> opt;
+
+    return opt;
+}
+
+void devScreen()
+{
+    system("cls");
+
+    cout << "Developers:" << endl << endl;
+    cout << "Angel Castro" << endl;
+    cout << "Taylor Martinez" << endl << endl;
+
+    cout << "Guide:" << endl;
+
+    return;
+}
+
+void mainMenu(vector<account>& acc, vector<loans>& loan)
+{
+    int option;
+
+    system("cls");
+    cout << "**********************************************" << endl;
+    cout << "                 Main Menu                    " << endl;
+    cout << "**********************************************" << endl;
+    cout << "Main Menu: " << endl << endl;
+
+    cout << "1: Open an Account" << endl;
+    cout << "2: Deposit Amount in Account" << endl;
+    cout << "3: Withdraw Amount from Account" << endl;
+    cout << "4: Display All Accounts" << endl;
+    cout << "5: Display Transaction Information" << endl;
+    cout << "6: Delete an Account" << endl;
+    cout << "7: Loan Application and Payments" << endl;
+    cout << "8: Search for Accounts" << endl;
+    cout << "9: Transfer Money to Another Account" << endl;
+    cout << "0: Exit Program" << endl;
 
     cout << endl;
 
-    cout << "Would you like to delete the account under " << loan.at(i).nameFirst << " " << loan.at(i).nameLast << endl;
+    cout << "Select an option: " << endl;
+    cin >> option;
+
+    selectMenu(option, acc, loan);
+
+    return;
+}
+
+void selectMenu(int opt, vector<account>& acc, vector<loans>& loan)
+{
+
+    if(opt == 1)
+    {
+        openAccount(acc, loan);
+        saveAccounts(acc);
+    }
+
+    if (opt == 2)
+    {
+        //depositAmount();
+    }
+    if(opt == 3)
+    {
+        //withdrawAmount();
+    }
+    if(opt == 4)
+    {
+        displayAccounts(acc, loan);
+
+    }
+    if(opt == 5)
+    {
+        //displayTransactions();
+    }
+
+    if(opt == 6)
+    {
+        system("cls");
+        eraseAcc(acc, loan);
+    }
+
+    if(opt == 7)
+    {
+        system("cls");
+        loanProcess(loan, acc);
+    }
+    if(opt == 8)
+    {
+       system("cls");
+       searchAcc(acc, loan);
+    }
+    if(opt == 9)
+    {
+       system("cls");
+       transferAcc(acc, loan);
+    }
+    if(opt == 0)
+        return;
+
+    if(opt > 10 || opt < 1)
+        cout << "Please enter a correct option" << endl;
+
+
+    return;
+}
+
+void getAccounts(vector<account>& acc)
+{
+    ifstream inFile;
+    account tmp;
+    char ch;
+
+    inFile.open("accounts.txt");
+
+    while(!inFile.eof())
+    {
+        inFile >> tmp.accountId;
+        inFile >> tmp.accountType;
+        inFile >> tmp.firstName;
+        inFile >> tmp.lastName;
+        inFile >> tmp.phoneNumber;
+        inFile >> tmp.amount;
+
+        acc.push_back(tmp);
+    }
+
+    inFile.close();
+
+    return;
+}
+
+void openAccount(vector<account>& acc, vector<loans>& loan)
+{
+    account tmp;
+    string str;
+    bool check = false;
+    int counter = 1;
+    int num;
+    int numID = 0;
+
+    system("cls");
+
+    //First Name
+    cout << endl << "Enter first name: " << endl;
+    cin >> tmp.firstName;
+
+    checkStrings(tmp.firstName);
+
+    //Last Name
+    cout << "Enter last name: " << endl;
+    cin >> tmp.lastName;
+
+    checkStrings(tmp.lastName);
+
+    //Phone Number
+    cout << "Enter phone number: " << endl;
+    cin >> tmp.phoneNumber;
+
+    /*while(!cin.fail())
+    {
+        cin.clear();
+        cin.ignore(1000,'\n');
+        cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+        cout << "Please enter information in field again" << endl;
+        cin.ignore(1000,'\n');
+        cin >> tmp.phoneNumber;
+        cin.ignore(1000,'\n');
+    }*/
+
+    check = false;
+
+    /*while(!check)
+    {
+        num = tmp.phoneNumber;
+        while(num >= 0)
+        {
+            num /= 10;
+            counter++;
+        }
+        if(counter != 10)
+        {
+            cout << "The number entered does not contain 10 digits" << endl;
+            cout << "Please enter a correct phone number" << endl;
+            cin >> tmp.phoneNumber;
+        }
+        else
+        {
+            check = true;
+        }
+        counter = 1;
+    }*/
+
+    //Account ID
+
+    tmp.accountId = acc.size() + 1;
+
+    cout << "Account ID: " << setfill('0') << setw(10) << tmp.accountId << endl;
+
+    //Account Type
+    cout << "Please choose the number of the type of account you want: " << endl;
+    cout << "1: Checking" << endl;
+    cout << "2: Saving" << endl;
+    cin >> num;
+
+    if(num == 1)
+    {
+        tmp.accountType = "Checking";
+    }
+    if(num == 2)
+    {
+        tmp.accountType = "Saving";
+    }
+
+    //Amount
+    cout << "Please input your initial desposit: " << endl;
+    cin >> tmp.amount;
+
+    acc.push_back(tmp);
+
+    cout << endl << "Account has been made" << endl;
+
+    cout << endl;
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+    if(num == 0)
+    {
+        mainMenu(acc, loan);
+    }
+
+    return;
+
+}
+
+void saveAccounts(vector<account>& acc)
+{
+    ofstream outFile;
+
+    account tmp;
+    int len;
+
+    outFile.open("accounts.txt");
+
+    for(int i = 0; i < acc.size()-1; ++i)
+    {
+        outFile << acc.at(i).accountId << " "
+        << acc.at(i).accountType << " "
+        << acc.at(i).firstName << " "
+        << acc.at(i).lastName << " "
+        << acc.at(i).phoneNumber << " "
+        << acc.at(i).amount << endl;
+    }
+    len = acc.size()-1;
+        outFile << acc.at(len).accountId << " "
+        << acc.at(len).accountType << " "
+        << acc.at(len).firstName << " "
+        << acc.at(len).lastName << " "
+        << acc.at(len).phoneNumber << " "
+        << acc.at(len).amount;
+
+    outFile.close();
+
+    return;
+}
+
+void despositAmount(vector<account>& acc)
+{
+    system("cls");
+}
+
+void displayAccounts(vector<account>& acc, vector<loans>& loan)
+{
+
+    system("cls");
+
+    int num;
+
+    cout << "************************************************************************************************************************" << endl;
+    cout << "                                                    Account Information                                                 " << endl;
+    cout << "************************************************************************************************************************" << endl;
+    cout << "Account No." << setw(17) << "Account Type" << setw(15) << "Name" << setw(24) << "Phone Number"
+         << setw(14) << "Amount" << endl;
+    cout << "************************************************************************************************************************" << endl;
+
+    string name;
+
+    for(int i=0; i < acc.size(); i++)
+    {
+        name = acc.at(i).firstName + " " + acc.at(i).lastName;
+
+        cout << setw(5) << right << acc.at(i).accountId;
+        cout << setw(22) << right << acc.at(i).accountType;
+        cout << setw(20) << right << name;
+        cout << setw(18) << right << acc.at(i).phoneNumber;
+        cout << setw(15) << right << acc.at(i).amount << endl;
+        cout << endl;
+    }
+
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+    if(num == 0)
+    {
+        mainMenu(acc, loan);
+    }
+
+}
+
+//Program by Taylor Martinez. Checks to see if a string has any numbers within
+void checkStrings(string str)
+{
+    bool check = false;
+    string checkstr;
+
+    checkstr = str;
+
+    while (!check)
+    {
+        for(unsigned int i = 0; i < checkstr.length(); ++i)
+        {
+            if(isdigit(checkstr.at(i)))
+            {
+                cout << "You cannot enter a number in this field. Enter characters only" << endl;
+                cout << "Please enter information in field again" << endl;
+                cin >> checkstr;
+            }
+            else
+            {
+                check = true;
+                str = checkstr;
+            }
+
+        }
+    }
+
+    return;
+}
+void eraseAcc(vector<account>& acc, vector<loans>& loan)
+{
+    int i;
+    int opt;
+    int num;
+
+
+    cout << "Please enter the account number to delete: ";
+    cin >> i;
+
+    foundAcc(acc, i);
+    if(i == -1)
+    {
+        cout << "Record was not found" << endl;
+        return;
+    }
+
+    cout << endl;
+
+    cout << "Would you like to delete the account under " << acc.at(i).firstName << " " << acc.at(i).lastName << endl;
 
     cout << endl;
 
@@ -113,7 +490,7 @@ void eraseAcc(vector<loans>& loan)
     {
         if(opt==1)
         {
-            loan.erase(loan.begin()+i);
+            acc.erase(acc.begin()+i);
             break;
 
 
@@ -121,31 +498,21 @@ void eraseAcc(vector<loans>& loan)
         if(opt >2 || opt < 1)
         {
             cout << "Please enter a correct option" << endl;
-            cout << "Would you like to delete the account under " << loan.at(i).nameFirst << " " << loan.at(i).nameLast << endl;
-
-            cout << endl;
-
-            cout << "Enter 1: Yes" << endl;
-            cout << "Enter 2: No" << endl;
-            cin >> opt;
         }
     }
 
-}
-int showMenu()
-{
-    int choice;
+     cout << endl;
 
-    cout << "Menu" << endl;
-    cout << "Enter 1: Erase" << endl;
-    cout << "Enter 2: Loan" << endl;
-    cout << "Enter 3: Search" << endl;
-    cout << "Enter 4: Transfer" <<endl;
-    cout << "Enter 0: Exit" << endl;
-    cin >> choice;
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
 
-    return choice;
+    if(num == 0)
+    {
+        mainMenu(acc, loan);
+    }
+
 }
+
 int showLoanMenu()
 {
     int opt;
@@ -188,14 +555,9 @@ void saveLoanData(vector<loans> loan)
 {
     ofstream saveFile;
 
-    int i;
-    int dec;
 
-    cout << "Would you like to save the information? \nEnter 1: Yes \nEnter 2: No" << endl;
-    cin >> dec;
 
-    if(dec == 1)
-    {
+
         int len;
         saveFile.open("LoanData.txt");
 
@@ -213,15 +575,12 @@ void saveLoanData(vector<loans> loan)
                      << loan.at(len).loanPrice << " " << loan.at(len).loanMonthPay;
 
         saveFile.close();
-        cout << "Data Saved" <<endl;
-    }
-    else
-        cout << "Data Not Saved" << endl;
 
 }
-void loanProcess(vector<loans>& loan)
+void loanProcess(vector<loans>& loan, vector<account>& acc)
 {
     int opt;
+    int num;
     bool flag = true;
 
     const double MORTGAGE_RATE = 0.00375;
@@ -542,12 +901,23 @@ void loanProcess(vector<loans>& loan)
             flag = false;
 
     }
+     cout << endl;
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+    if(num == 0)
+    {
+        mainMenu(acc, loan);
+    }
+
 }
 
 //Searches data, only account number completed can use same template for date
-void searchLoan(vector<loans> loan)
+void searchAcc(vector<account> acc, vector<loans> loan)
 {
     int opt;
+    int num;
 
     cout << "How would you like to search for the account information?" << endl;
     cout << "Enter 1: Account Number" << endl;
@@ -557,35 +927,35 @@ void searchLoan(vector<loans> loan)
     if(opt==1)
     {
         int accNum;
+        int val;
         system("cls");
         cout << "Enter the account number: ";
         cin >> accNum;
 
+        val = foundAcc(acc, accNum);
 
-        if(found(loan, accNum) != -1)
+
+        if( val != -1)
         {
             cout << "************************************************************************************************************************" << endl;
-            cout << "                                                    Loan Information                                                      " << endl;
+            cout << "                                                    Account Information                                                 " << endl;
             cout << "************************************************************************************************************************" << endl;
-            cout << "Name" << setw(25) << "Loan Type" << setw(15) << "Social" << setw(16) << "Loan Amount"
-                 << setw(14) << "Loan ID" << setw(20) << "Total Loan Cost" << setw(24) << "Monthly Installment" << setw(10) << endl;
+            cout << "Account No." << setw(17) << "Account Type" << setw(15) << "Name" << setw(24) << "Phone Number"
+                 << setw(14) << "Amount" << endl;
             cout << "************************************************************************************************************************" << endl;
 
             string name;
-            int index = found(loan, accNum);
 
-            name = loan.at(index).nameFirst + " " + loan.at(index).nameLast;
+            name = acc.at(val).firstName + " " + acc.at(val).lastName;
 
-            cout << setw(15) << left << name;
-            cout << setw(13) << right << loan.at(index).loanType;
-            cout << setw(16) << right << loan.at(index).social;
-            cout << setw(14) << right << loan.at(index).loanAmt;
-            cout << setw(15) << right << loan.at(index).loanID;
-            cout << setw(18) << right << loan.at(index).loanPrice;
-            cout << setw(18) << right << loan.at(index).loanMonthPay << endl;
+            cout << setw(5) << right << acc.at(val).accountId;
+            cout << setw(22) << right << acc.at(val).accountType;
+            cout << setw(20) << right << name;
+            cout << setw(18) << right << acc.at(val).phoneNumber;
+            cout << setw(15) << right << acc.at(val).amount << endl;
             cout << endl;
         }
-        if(found(loan, accNum) == -1)
+        if(val == -1)
         {
             cout << "\nRecord was not found" << endl;
         }
@@ -598,28 +968,38 @@ void searchLoan(vector<loans> loan)
     if(opt>2 || opt<1)
         cout << "Please enter a valid option" << endl;
 
+    cout << endl;
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+    if(num == 0)
+    {
+        mainMenu(acc, loan);
+    }
 }
 
-//returns index to display loan account based on social security entered, can be changed to something else
-int found(vector<loans> loan, int accNum)
+//returns index to display account
+int foundAcc(vector<account>& acc, int accNum)
 {
 
-        for(int i=0; i < loan.size(); i++)
+        for(int i=0; i < acc.size(); i++)
         {
-            if(loan.at(i).social == accNum)
+            if(acc.at(i).accountId == accNum)
                 return i;
         }
     return -1;
 }
 
 //Transfer loans based on social security entered can be changed to anything else
-void transferLoan(vector<loans> loan)
+void transferAcc(vector<account>& acc, vector<loans>& loan)
 {
     int accNo1;
     int accNo2;
     int index1;
     int index2;
     int funds;
+    int num;
 
     cout << "Enter account number of account that is transferring: ";
     cin >> accNo1;
@@ -632,24 +1012,24 @@ void transferLoan(vector<loans> loan)
     system("cls");
 
     cout << "Account Transferring\n" << endl;
-    index1 = found(loan, accNo1);
-    cout << "Name of Account Holder: " << loan.at(index1).nameFirst << " " << loan.at(index1).nameLast << endl;
-    cout << "Amount in Account: " << loan.at(index1).loanPrice << endl;
+    index1 = foundAcc(acc, accNo1);
+    cout << "Name of Account Holder: " << acc.at(index1).firstName << " " << acc.at(index1).lastName << endl;
+    cout << "Amount in Account: " << acc.at(index1).amount << endl;
 
     cout << "Account receiving Transfer\n" << endl;
-    index2 = found(loan, accNo2);
-    cout << "Name of Account Holder: " << loan.at(index2).nameFirst << " " << loan.at(index2).nameLast << endl;
-    cout << "Amount in Account: " << loan.at(index2).loanPrice << endl;
+    index2 = foundAcc(acc, accNo2);
+    cout << "Name of Account Holder: " << acc.at(index2).firstName << " " << acc.at(index2).lastName << endl;
+    cout << "Amount in Account: " << acc.at(index2).amount << endl;
 
     cout << endl;
 
     cout << "Enter amount to be transfer: ";
     cin >> funds;
-    if(funds >0 && funds <= loan.at(index1).loanPrice)
+    if(funds >0 && funds <= acc.at(index1).amount)
     {
-        loan.at(index1).loanPrice = loan.at(index1).loanPrice-funds;
-        loan.at(index2).loanPrice = loan.at(index2).loanPrice + funds;
-
+        acc.at(index1).amount = acc.at(index1).amount - funds;
+        acc.at(index2).amount = acc.at(index2).amount + funds;
+        saveAccounts(acc);
     }
     else
         cout << "Please enter a valid amount" << endl;
@@ -658,10 +1038,20 @@ void transferLoan(vector<loans> loan)
 
     cout << "Amount transferred: " << funds << endl;
     cout << endl;
-    cout << "Name of Account Holder: " << loan.at(index1).nameFirst << " " << loan.at(index1).nameLast << endl;
-    cout << "Amount in Account: " << loan.at(index1).loanPrice << endl;
+    cout << "Name of Account Holder: " << acc.at(index1).firstName << " " << acc.at(index1).lastName << endl;
+    cout << "Amount in Account: " << acc.at(index1).amount << endl;
     cout << endl;
-    cout << "Name of Account Holder: " << loan.at(index2).nameFirst << " " << loan.at(index2).nameLast << endl;
-    cout << "Amount in Account: " << loan.at(index2).loanPrice << endl;
+    cout << "Name of Account Holder: " << acc.at(index2).firstName << " " << acc.at(index2).lastName << endl;
+    cout << "Amount in Account: " << acc.at(index2).amount << endl;
+
+    cout << endl;
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+    if(num == 0)
+    {
+        mainMenu(acc, loan);
+    }
 
 }
