@@ -1,4 +1,4 @@
-//Angel Castro COP 1334
+//Angel Castro and Taylor Martinez COP 1334
 //Final project::Banking System
 
 #include <iostream>
@@ -11,6 +11,9 @@
 #include <iomanip>
 #include <ctime>
 #include <cmath>
+#include <limits>
+#include <stdio.h>
+#include <time.h>
 
 using namespace std;
 
@@ -21,6 +24,9 @@ struct account
     int accountId;
     long long int phoneNumber;
     string accountType;
+    string month;
+    string day;
+    string year;
     int amount;
 };
 struct loans
@@ -35,46 +41,62 @@ struct loans
     double loanMonthPay;
 
 };
+struct transaction
+{
+    string firstName;
+    string lastName;
+    int transactionID = 0;
+    int accountID;
+    string transactionType;
+    string month;
+    string day;
+    string year;
+    int amount;
+
+};
 
 string ACCOUNTFILENAME = "accounts.txt";
+string TRANFILENAME = "transactions.txt";
 
 int welcomeScreen(int counter);
 void devScreen();
-void mainMenu(vector<account>& acc, vector<loans>& loan);
-void selectMenu(int opt, vector<account>& acc, vector<loans>& loan);
+void mainMenu(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran);
+void selectMenu(int opt, vector<account>& acc, vector<loans>& loan, vector<transaction>& tran);
 void getAccounts(vector<account>& acc);
-void openAccount(vector<account>& acc, vector<loans>& loan);
+void getTransactions(vector<transaction>& tran);
+void openAccount(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran);
 void saveAccounts(vector<account>& acc);
-void despositAmount(vector<account>& acc);
-void withdrawAmount();
-void displayAccounts(vector<account>& acc, vector<loans>& loan);
-void displayTransactions();
+void depositAmount(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran);
+void withdrawAmount(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran);
+void displayAccounts(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran);
+void displayTransactions(vector<account>& acc, vector<loans>& loan, vector<transaction> tran);
+int foundTran(vector<transaction>& tran, int tranNum);
 void checkStrings(string str);
-void eraseAcc(vector<account>& acc, vector<loans>& loan);
-void loanProcess(vector<loans>& loan, vector<account>& acc);
+void eraseAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran);
+void loanProcess(vector<loans>& loan, vector<account>& acc, vector<transaction>& tran);
 void getLoanData(vector<loans>& loan);
 void saveLoanData(vector<loans> loan);
 int showLoanMenu();
 int found(vector<loans> loan, int accNum);
-void searchAcc(vector<account> acc, vector<loans> loan);
-void transferAcc(vector<account>& acc, vector<loans>& loan);
+void searchAcc(vector<account> acc, vector<loans> loan, vector<transaction> tran );
+void saveTransactions(vector<transaction>& tran);
+void transferAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran);
 int foundAcc(vector<account>& acc, int accNum);
+int foundTran(vector<transaction>& tran, int tranNum);
+int foundDay(vector<transaction>& tran, string mon, string day, string year);
 
 int main()
 {
     vector<account> accounts;
     vector<loans> loan;
+    vector<transaction> transactions;
 
     int option;
     int i = 0;
 
-    //ifstream existFile(ACCOUNTFILENAME.c_str());
-   // if(existFile)
-   //// {
-    //    getAccounts(accounts);
-    //}
     getAccounts(accounts);
     getLoanData(loan);
+    getTransactions(transactions);
 
     do
     {
@@ -85,7 +107,7 @@ int main()
         }
         if((option == 2 && i == 0) || (option == 1 && i != 0))
         {
-            mainMenu(accounts, loan);
+            mainMenu(accounts, loan, transactions);
             option = 99;
         }
         i++;
@@ -97,7 +119,7 @@ int main()
 
     return 0;
 }
-
+///Taylor
 int welcomeScreen(int counter)
 {
     int opt;
@@ -123,7 +145,7 @@ int welcomeScreen(int counter)
 
     return opt;
 }
-
+///Taylor
 void devScreen()
 {
     system("cls");
@@ -133,11 +155,23 @@ void devScreen()
     cout << "Taylor Martinez" << endl << endl;
 
     cout << "Guide:" << endl;
+    cout << "With this program you will be able to: " << endl;
+    cout << "- Make an Account with MDC Banking" << endl;
+    cout << "- Make deposits and withdrawals into and from the account" << endl;
+    cout << "- Be able to see all accounts and their information" << endl;
+    cout << "- Be able to see all transactions that has been done with MDC Banking" << endl;
+    cout << "- Be able to take out loans" << endl;
+    cout << "- Be able to search for specific accounts in the system" << endl;
+    cout << "- Be able to transfer money from one account to another of your choosing" << endl;
+
+    cout << endl << "While using this program: " << endl;
+    cout << "- Enter a number when asked for one. Characters won't be allowed in numeric fields" << endl;
+    cout << "- Enter a character when asked for one. Numbers won't be allowed in character fields" << endl;
 
     return;
 }
-
-void mainMenu(vector<account>& acc, vector<loans>& loan)
+///Taylor
+void mainMenu(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     int option;
 
@@ -145,7 +179,7 @@ void mainMenu(vector<account>& acc, vector<loans>& loan)
     cout << "**********************************************" << endl;
     cout << "                 Main Menu                    " << endl;
     cout << "**********************************************" << endl;
-    cout << "Main Menu: " << endl << endl;
+    cout << endl;
 
     cout << "1: Open an Account" << endl;
     cout << "2: Deposit Amount in Account" << endl;
@@ -163,58 +197,62 @@ void mainMenu(vector<account>& acc, vector<loans>& loan)
     cout << "Select an option: " << endl;
     cin >> option;
 
-    selectMenu(option, acc, loan);
+    selectMenu(option, acc, loan, tran);
 
     return;
 }
-
-void selectMenu(int opt, vector<account>& acc, vector<loans>& loan)
+///Taylor
+void selectMenu(int opt, vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
 
     if(opt == 1)
     {
-        openAccount(acc, loan);
+        openAccount(acc, loan, tran);
         saveAccounts(acc);
     }
 
     if (opt == 2)
     {
-        //depositAmount();
+        depositAmount(acc, loan, tran);
+        saveAccounts(acc);
+        saveTransactions(tran);
     }
     if(opt == 3)
     {
-        //withdrawAmount();
+        withdrawAmount(acc, loan, tran);
+        saveAccounts(acc);
+        saveTransactions(tran);
     }
     if(opt == 4)
     {
-        displayAccounts(acc, loan);
+        displayAccounts(acc,loan, tran);
 
     }
     if(opt == 5)
     {
-        //displayTransactions();
+        displayTransactions(acc, loan, tran);
     }
 
     if(opt == 6)
     {
         system("cls");
-        eraseAcc(acc, loan);
+        eraseAcc(acc, loan, tran);
     }
 
     if(opt == 7)
     {
         system("cls");
-        loanProcess(loan, acc);
+        loanProcess(loan, acc, tran);
     }
     if(opt == 8)
     {
        system("cls");
-       searchAcc(acc, loan);
+       searchAcc(acc, loan, tran);
     }
     if(opt == 9)
     {
        system("cls");
-       transferAcc(acc, loan);
+       transferAcc(acc, loan, tran);
     }
     if(opt == 0)
         return;
@@ -225,7 +263,7 @@ void selectMenu(int opt, vector<account>& acc, vector<loans>& loan)
 
     return;
 }
-
+///Taylor
 void getAccounts(vector<account>& acc)
 {
     ifstream inFile;
@@ -242,6 +280,9 @@ void getAccounts(vector<account>& acc)
         inFile >> tmp.lastName;
         inFile >> tmp.phoneNumber;
         inFile >> tmp.amount;
+        inFile >> tmp.month;
+        inFile >> tmp.day;
+        inFile >> tmp.year;
 
         acc.push_back(tmp);
     }
@@ -250,13 +291,40 @@ void getAccounts(vector<account>& acc)
 
     return;
 }
+///Taylor
+void getTransactions(vector<transaction>& tran)
+{
+    ifstream inFile;
+    transaction tmpp;
 
-void openAccount(vector<account>& acc, vector<loans>& loan)
+    inFile.open(TRANFILENAME.c_str());
+
+    while(!inFile.eof())
+    {
+        inFile >> tmpp.accountID;
+        inFile >> tmpp.transactionID;
+        inFile >> tmpp.transactionType;
+        inFile >> tmpp.firstName;
+        inFile >> tmpp.lastName;
+        inFile >> tmpp.amount;
+        inFile >> tmpp.month;
+        inFile >> tmpp.day;
+        inFile >> tmpp.year;
+
+        tran.push_back(tmpp);
+    }
+
+    inFile.close();
+
+    return;
+}
+///Taylor
+void openAccount(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     account tmp;
     string str;
     bool check = false;
-    int counter = 1;
+    int counter = 0;
     int num;
     int numID = 0;
 
@@ -278,27 +346,28 @@ void openAccount(vector<account>& acc, vector<loans>& loan)
     cout << "Enter phone number: " << endl;
     cin >> tmp.phoneNumber;
 
-    /*while(!cin.fail())
+    while(cin.fail())
     {
         cin.clear();
-        cin.ignore(1000,'\n');
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "You cannot enter a character in this field. Enter numbers only" << endl;
         cout << "Please enter information in field again" << endl;
-        cin.ignore(1000,'\n');
         cin >> tmp.phoneNumber;
         cin.ignore(1000,'\n');
-    }*/
+    }
 
-    check = false;
 
-    /*while(!check)
+    while(!check)
     {
+
         num = tmp.phoneNumber;
-        while(num >= 0)
+
+        while(num != 0)
         {
             num /= 10;
             counter++;
         }
+
         if(counter != 10)
         {
             cout << "The number entered does not contain 10 digits" << endl;
@@ -309,8 +378,10 @@ void openAccount(vector<account>& acc, vector<loans>& loan)
         {
             check = true;
         }
-        counter = 1;
-    }*/
+
+        counter = 0;
+
+    }
 
     //Account ID
 
@@ -333,9 +404,32 @@ void openAccount(vector<account>& acc, vector<loans>& loan)
         tmp.accountType = "Saving";
     }
 
+     //Date
+    time_t now;
+    struct tm * today;
+
+    time(&now);
+    today = localtime(&now);
+
+    str = asctime(today);
+
+    tmp.month = str.substr(4,3);
+    tmp.day = str.substr(8,2);
+    tmp.year = str.substr(20,4);
+
     //Amount
-    cout << "Please input your initial desposit: " << endl;
+    cout << "Please input your initial deposit: " << endl;
     cin >> tmp.amount;
+
+    while(cin.fail())
+    {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+        cout << "Please enter information in field again" << endl;
+        cin >> tmp.phoneNumber;
+        cin.ignore(1000,'\n');
+    }
 
     acc.push_back(tmp);
 
@@ -348,13 +442,13 @@ void openAccount(vector<account>& acc, vector<loans>& loan)
 
     if(num == 0)
     {
-        mainMenu(acc, loan);
+        mainMenu(acc, loan, tran);
     }
 
     return;
 
 }
-
+///Taylor
 void saveAccounts(vector<account>& acc)
 {
     ofstream outFile;
@@ -371,7 +465,10 @@ void saveAccounts(vector<account>& acc)
         << acc.at(i).firstName << " "
         << acc.at(i).lastName << " "
         << acc.at(i).phoneNumber << " "
-        << acc.at(i).amount << endl;
+        << acc.at(i).amount << " "
+        << acc.at(i).month << " "
+        << acc.at(i).day << " "
+        << acc.at(i).year << endl;
     }
     len = acc.size()-1;
         outFile << acc.at(len).accountId << " "
@@ -379,19 +476,195 @@ void saveAccounts(vector<account>& acc)
         << acc.at(len).firstName << " "
         << acc.at(len).lastName << " "
         << acc.at(len).phoneNumber << " "
-        << acc.at(len).amount;
+        << acc.at(len).amount << " "
+        << acc.at(len).month << " "
+        << acc.at(len).day << " "
+        << acc.at(len).year;
 
     outFile.close();
 
     return;
 }
-
-void despositAmount(vector<account>& acc)
+void saveTransactions(vector<transaction>& tran)
 {
-    system("cls");
-}
+    ofstream outFile;
+    int len;
 
-void displayAccounts(vector<account>& acc, vector<loans>& loan)
+    outFile.open(TRANFILENAME.c_str());
+
+    for(int i = 0; i < tran.size()-1; ++i)
+    {
+        outFile << tran.at(i).accountID << " "
+        << tran.at(i).transactionID << " "
+        << tran.at(i).transactionType << " "
+        << tran.at(i).firstName << " "
+        << tran.at(i).lastName << " "
+        << tran.at(i).amount << " "
+        << tran.at(i).month << " "
+        << tran.at(i).day << " "
+        << tran.at(i).year << endl;
+    }
+
+    len = tran.size()-1;
+
+    outFile << tran.at(len).accountID << " "
+        << tran.at(len).transactionID << " "
+        << tran.at(len).transactionType << " "
+        << tran.at(len).firstName << " "
+        << tran.at(len).lastName << " "
+        << tran.at(len).amount << " "
+        << tran.at(len).month << " "
+        << tran.at(len).day << " "
+        << tran.at(len).year << endl;
+
+    outFile.close();
+
+    return;
+}
+///Taylor
+void depositAmount(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
+{
+    int ID;
+    int num;
+    int numID;
+    int deposit;
+    string str;
+    transaction tmp;
+
+
+    system("cls");
+    cout << "Enter the ID of the account you wish to deposit money to: " << endl;
+    cin >> numID;
+
+    ID = foundAcc(acc, numID);
+
+    cout << "Account Holder's Name: " << acc.at(ID).firstName + " " + acc.at(ID).lastName << endl;
+    cout << "Account Balance: " << acc.at(ID).amount << endl;
+    cout << endl << "Enter Amount you wish to deposit: " << endl;
+    cin >> deposit;
+
+    acc.at(ID).amount += deposit;
+
+    cout << endl << "New Balance: " <<  acc.at(ID).amount << endl;
+
+    tmp.firstName = acc.at(ID).firstName;
+    tmp.lastName =acc.at(ID).lastName;
+
+    if(foundTran(tran,numID) != 0)
+    {
+        tmp.transactionID = foundTran(tran,numID) + 1;
+    }
+    else
+    {
+        tmp.transactionID++;
+    }
+
+    tmp.accountID = acc.at(ID).accountId;
+
+    tmp.transactionType = "Deposit";
+
+    //Date
+    time_t now;
+    struct tm * today;
+
+    time(&now);
+    today = localtime(&now);
+
+    str = asctime(today);
+
+    tmp.month = str.substr(4,3);
+    tmp.day = str.substr(8,2);
+    tmp.year = str.substr(20,4);
+
+    tmp.amount = deposit;
+    tmp.transactionID += 1;
+
+    tran.push_back(tmp);
+
+    saveTransactions(tran);
+    saveAccounts(acc);
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+
+    if(num == 0)
+    {
+        mainMenu(acc,loan, tran);
+    }
+
+    return;
+
+}
+///Taylor
+void withdrawAmount(vector<account>& acc,vector<loans>& loan,  vector<transaction>& tran)
+{
+    int ID;
+    int num;
+    int numID;
+    string str;
+    int withdrawal;
+    transaction tmp;
+
+
+    system("cls");
+    cout << "Enter the ID of the account you wish to withdraw money from: " << endl;
+    cin >> numID;
+
+    ID = foundAcc(acc, numID);
+
+    cout << "Account Holder's Name: " << acc.at(ID).firstName + " " + acc.at(ID).lastName << endl;
+    cout << "Account Balance: " << acc.at(ID).amount << endl;
+    cout << endl << "Enter Amount you wish to withdraw: " << endl;
+    cin >> withdrawal;
+
+    acc.at(ID).amount -= withdrawal;
+
+    cout << endl << "New Balance: " <<  acc.at(ID).amount << endl;
+
+    tmp.firstName = acc.at(ID).firstName;
+    tmp.lastName = acc.at(ID).lastName;
+
+    tmp.transactionID++;
+    tmp.accountID = acc.at(ID).accountId;
+
+    tmp.transactionType = "Withdraw";
+
+    //Date
+    time_t now;
+    struct tm * today;
+
+
+    time(&now);
+    today = localtime(&now);
+
+    str = asctime(today);
+
+    tmp.month = str.substr(4,3);
+    tmp.day = str.substr(8,2);
+    tmp.year = str.substr(20,4);
+
+    tmp.amount = withdrawal;
+    tmp.transactionID += 1;
+
+    tran.push_back(tmp);
+
+    saveTransactions(tran);
+    saveAccounts(acc);
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+
+    if(num == 0)
+    {
+        mainMenu(acc, loan, tran);
+    }
+
+    return;
+}
+///Taylor
+void displayAccounts(vector<account>& acc, vector<loans>& loan, vector<transaction>&tran)
 {
 
     system("cls");
@@ -402,7 +675,7 @@ void displayAccounts(vector<account>& acc, vector<loans>& loan)
     cout << "                                                    Account Information                                                 " << endl;
     cout << "************************************************************************************************************************" << endl;
     cout << "Account No." << setw(17) << "Account Type" << setw(15) << "Name" << setw(24) << "Phone Number"
-         << setw(14) << "Amount" << endl;
+         << setw(14) << "Amount" << setw(20) << "Date Created" << endl;
     cout << "************************************************************************************************************************" << endl;
 
     string name;
@@ -415,8 +688,8 @@ void displayAccounts(vector<account>& acc, vector<loans>& loan)
         cout << setw(22) << right << acc.at(i).accountType;
         cout << setw(20) << right << name;
         cout << setw(18) << right << acc.at(i).phoneNumber;
-        cout << setw(15) << right << acc.at(i).amount << endl;
-        cout << endl;
+        cout << setw(15) << right << acc.at(i).amount;
+        cout << setw(12) << right << acc.at(i).month << " " << acc.at(i).day << " " <<  acc.at(i).year << endl;
     }
 
 
@@ -425,12 +698,177 @@ void displayAccounts(vector<account>& acc, vector<loans>& loan)
 
     if(num == 0)
     {
-        mainMenu(acc, loan);
+        mainMenu(acc, loan, tran);
     }
 
 }
+///Taylor
+void displayTransactions(vector<account>& acc, vector<loans>& loan, vector<transaction> tran)
+{
+    int num;
+    int opt;
+    int c;
+    string mon;
+    string day;
+    string year;
 
-//Program by Taylor Martinez. Checks to see if a string has any numbers within
+    system("cls");
+
+
+    cout << "How do you want the information displayed?" << endl;
+    cout << "1: Type Of Transaction" << endl;
+    cout << "2: Date" << endl;
+    cout << "3: All Transaction" << endl;
+    cin >> opt;
+
+    if(opt == 1)
+    {
+        system("cls");
+        cout << "What type of transaction?" << endl;
+        cout << "1: Deposit" << endl;
+        cout << "2: Withdraw" << endl;
+        cin >> c;
+        cout << endl;
+
+        if(c==1)
+        {
+           cout << "************************************************************************************************************************" << endl;
+            cout << "                                                    Account Information                                                 " << endl;
+            cout << "************************************************************************************************************************" << endl;
+            cout << "Account No." << setw(17) << "Transaction ID" << setw(18) << "Transaction Type" << setw(13) << "Name"
+                 << setw(23) << "Amount" << setw(22) << "Transaction Date" << endl;
+            cout << "************************************************************************************************************************" << endl;
+
+            for(unsigned int i = 0; i < tran.size() ; ++i)
+            {
+                if(tran.at(i).transactionType == "Deposit")
+                {
+                    string name;
+                    name = tran.at(i).firstName + " " + tran.at(i).lastName;
+
+                    cout << setw(10) << left << tran.at(i).accountID << " "
+                    << setw(10) << right <<tran.at(i).transactionID << " "
+                    << setw(20) << right << tran.at(i).transactionType << " "
+                    << setw(22) << right << name << " "
+                    << setw(14) << right << tran.at(i).amount << " "
+                    << setw(13) << right << tran.at(i).month << " " << tran.at(i).day << " " <<  tran.at(i).year << endl;
+                }
+
+            }
+        }
+        if(c==2)
+        {
+            cout << "************************************************************************************************************************" << endl;
+            cout << "                                                    Account Information                                                 " << endl;
+            cout << "************************************************************************************************************************" << endl;
+            cout << "Account No." << setw(17) << "Transaction ID" << setw(18) << "Transaction Type" << setw(13) << "Name"
+                 << setw(23) << "Amount" << setw(22) << "Transaction Date" << endl;
+            cout << "************************************************************************************************************************" << endl;
+
+            for(unsigned int i = 0; i < tran.size() ; ++i)
+            {
+                if(tran.at(i).transactionType == "Withdraw")
+                {
+                    string name;
+                    name = tran.at(i).firstName + " " + tran.at(i).lastName;
+
+                    cout << setw(10) << left << tran.at(i).accountID << " "
+                    << setw(10) << right <<tran.at(i).transactionID << " "
+                    << setw(20) << right << tran.at(i).transactionType << " "
+                    << setw(22) << right << name << " "
+                    << setw(14) << right << tran.at(i).amount << " "
+                    << setw(13) << right << tran.at(i).month << " " << tran.at(i).day << " " <<  tran.at(i).year << endl;
+                }
+
+            }
+        }
+        if(c >= 3 || c <= 0)
+        {
+            cout << endl;
+            cout << "Please enter a correct option" << endl;
+        }
+
+
+    }
+    if(opt == 2)
+    {
+        while(mon.length() != 3 || day.length() != 2 || year.length() != 4)
+        {
+            cout << "Please enter date(format: Jan 01 2017): ";
+            cin >> mon >> day >> year;
+
+            if(mon.length() == 3 && day.length() == 2 && year.length() == 4)
+                break;
+        }
+
+            cout << "************************************************************************************************************************" << endl;
+            cout << "                                                    Account Information                                                 " << endl;
+            cout << "************************************************************************************************************************" << endl;
+            cout << "Account No." << setw(17) << "Transaction ID" << setw(18) << "Transaction Type" << setw(13) << "Name"
+                 << setw(23) << "Amount" << setw(22) << "Transaction Date" << endl;
+            cout << "************************************************************************************************************************" << endl;
+
+            for(unsigned int i = 0; i < tran.size() ; ++i)
+            {
+                if(foundDay(tran, mon, day, year) != -1)
+                {
+                    string name;
+                    name = tran.at(i).firstName + " " + tran.at(i).lastName;
+
+                    cout << setw(10) << left << tran.at(i).accountID << " "
+                    << setw(10) << right <<tran.at(i).transactionID << " "
+                    << setw(20) << right << tran.at(i).transactionType << " "
+                    << setw(22) << right << name << " "
+                    << setw(14) << right << tran.at(i).amount << " "
+                    << setw(13) << right << tran.at(i).month << " " << tran.at(i).day << " " <<  tran.at(i).year << endl;
+                }
+
+            }
+            if(foundDay(tran, mon, day, year) == -1)
+            {
+                cout << "Record was not found" << endl;
+            }
+
+    }
+    if(opt==3)
+    {
+        cout << "************************************************************************************************************************" << endl;
+        cout << "                                                    Account Information                                                 " << endl;
+        cout << "************************************************************************************************************************" << endl;
+        cout << "Account No." << setw(17) << "Transaction ID" << setw(18) << "Transaction Type" << setw(13) << "Name"
+             << setw(23) << "Amount" << setw(22) << "Transaction Date" << endl;
+        cout << "************************************************************************************************************************" << endl;
+
+        for(unsigned int i = 0; i < tran.size(); ++i)
+        {
+        string name;
+        name = tran.at(i).firstName + " " + tran.at(i).lastName;
+
+        cout << setw(10) << left << tran.at(i).accountID << " "
+        << setw(10) << right <<tran.at(i).transactionID << " "
+        << setw(20) << right << tran.at(i).transactionType << " "
+        << setw(22) << right << name << " "
+        << setw(14) << right << tran.at(i).amount << " "
+        << setw(13) << right << tran.at(i).month << " " << tran.at(i).day << " " <<  tran.at(i).year << endl;
+        }
+    }
+    if(opt > 3 || opt < 1)
+    {
+        cout << "Please enter a correct option" << endl;
+    }
+
+
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+    if(num == 0)
+    {
+        mainMenu(acc, loan, tran);
+    }
+}
+
+///Taylor
 void checkStrings(string str)
 {
     bool check = false;
@@ -459,7 +897,8 @@ void checkStrings(string str)
 
     return;
 }
-void eraseAcc(vector<account>& acc, vector<loans>& loan)
+///Angel
+void eraseAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     int i;
     int opt;
@@ -508,11 +947,11 @@ void eraseAcc(vector<account>& acc, vector<loans>& loan)
 
     if(num == 0)
     {
-        mainMenu(acc, loan);
+        mainMenu(acc, loan, tran);
     }
 
 }
-
+///Angel
 int showLoanMenu()
 {
     int opt;
@@ -532,6 +971,7 @@ int showLoanMenu()
     return opt;
 
 }
+///Angel
 void getLoanData(vector<loans>& loan)
 {
     ifstream myFile;
@@ -551,6 +991,7 @@ void getLoanData(vector<loans>& loan)
 
     myFile.close();
 }
+///Angel
 void saveLoanData(vector<loans> loan)
 {
     ofstream saveFile;
@@ -577,7 +1018,8 @@ void saveLoanData(vector<loans> loan)
         saveFile.close();
 
 }
-void loanProcess(vector<loans>& loan, vector<account>& acc)
+///Angel
+void loanProcess(vector<loans>& loan, vector<account>& acc, vector<transaction>& tran)
 {
     int opt;
     int num;
@@ -613,12 +1055,33 @@ void loanProcess(vector<loans>& loan, vector<account>& acc)
                 temp.loanType = "Mortgage";
                 cout << "Please enter your first name: ";
                 cin >> temp.nameFirst;
+                checkStrings(temp.nameFirst);
                 cout << "Please enter your last name: ";
                 cin >> temp.nameLast;
+                checkStrings(temp.nameLast);
                 cout << "Please enter your social security number: ";
                 cin >> temp.social;
+                while(cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+                    cout << "Please enter information in field again" << endl;
+                    cin >> temp.social;
+                    cin.ignore(1000,'\n');
+                }
                 cout << "Please enter the amount of the loan: ";
                 cin >> temp.loanAmt;
+                while(cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+                    cout << "Please enter information in field again" << endl;
+                    cin >> temp.loanAmt;
+                    cin.ignore(1000,'\n');
+                }
+
 
                 srand(time(0));
 
@@ -651,13 +1114,32 @@ void loanProcess(vector<loans>& loan, vector<account>& acc)
             {
                 temp.loanType = "Student";
                 cout << "Please enter your first name: ";
-                cin >> temp.nameFirst;
+                checkStrings(temp.nameFirst);
                 cout << "Please enter your last name: ";
-                cin >> temp.nameLast;
+                checkStrings(temp.nameLast);
                 cout << "Please enter your social security number: ";
                 cin >> temp.social;
+                while(cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+                    cout << "Please enter information in field again" << endl;
+                    cin >> temp.social;
+                    cin.ignore(1000,'\n');
+                }
                 cout << "Please enter the amount of the loan: ";
                 cin >> temp.loanAmt;
+                while(cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+                    cout << "Please enter information in field again" << endl;
+                    cin >> temp.loanAmt;
+                    cin.ignore(1000,'\n');
+                }
+
 
                 srand(time(0));
 
@@ -690,12 +1172,33 @@ void loanProcess(vector<loans>& loan, vector<account>& acc)
                 temp.loanType = "Personal";
                 cout << "Please enter your first name: ";
                 cin >> temp.nameFirst;
+                checkStrings(temp.nameFirst);
                 cout << "Please enter your last name: ";
                 cin >> temp.nameLast;
+                checkStrings(temp.nameLast);
                 cout << "Please enter your social security number: ";
                 cin >> temp.social;
+                while(cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+                    cout << "Please enter information in field again" << endl;
+                    cin >> temp.social;
+                    cin.ignore(1000,'\n');
+                }
                 cout << "Please enter the amount of the loan: ";
                 cin >> temp.loanAmt;
+                while(cin.fail())
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "You cannot enter a character in this field. Enter numbers only" << endl;
+                    cout << "Please enter information in field again" << endl;
+                    cin >> temp.loanAmt;
+                    cin.ignore(1000,'\n');
+                }
+
 
                 srand(time(0));
 
@@ -908,16 +1411,20 @@ void loanProcess(vector<loans>& loan, vector<account>& acc)
 
     if(num == 0)
     {
-        mainMenu(acc, loan);
+        mainMenu(acc, loan, tran);
     }
 
 }
 
-//Searches data, only account number completed can use same template for date
-void searchAcc(vector<account> acc, vector<loans> loan)
+///Angel
+void searchAcc(vector<account> acc, vector<loans> loan, vector<transaction> tran)
 {
     int opt;
     int num;
+    string mon;
+    string day;
+    string year;
+
 
     cout << "How would you like to search for the account information?" << endl;
     cout << "Enter 1: Account Number" << endl;
@@ -932,6 +1439,7 @@ void searchAcc(vector<account> acc, vector<loans> loan)
         cout << "Enter the account number: ";
         cin >> accNum;
 
+
         val = foundAcc(acc, accNum);
 
 
@@ -941,7 +1449,7 @@ void searchAcc(vector<account> acc, vector<loans> loan)
             cout << "                                                    Account Information                                                 " << endl;
             cout << "************************************************************************************************************************" << endl;
             cout << "Account No." << setw(17) << "Account Type" << setw(15) << "Name" << setw(24) << "Phone Number"
-                 << setw(14) << "Amount" << endl;
+                 << setw(14) << "Amount" << setw(20) << "Date Created" << endl;
             cout << "************************************************************************************************************************" << endl;
 
             string name;
@@ -952,8 +1460,8 @@ void searchAcc(vector<account> acc, vector<loans> loan)
             cout << setw(22) << right << acc.at(val).accountType;
             cout << setw(20) << right << name;
             cout << setw(18) << right << acc.at(val).phoneNumber;
-            cout << setw(15) << right << acc.at(val).amount << endl;
-            cout << endl;
+            cout << setw(15) << right << acc.at(val).amount;
+             cout << setw(12) << right << acc.at(val).month << " " << acc.at(val).day << " " <<  acc.at(val).year << endl;
         }
         if(val == -1)
         {
@@ -963,7 +1471,46 @@ void searchAcc(vector<account> acc, vector<loans> loan)
 
     if(opt==2)
     {
+        int val;
+        while(mon.length() != 3 || day.length() != 2 || year.length() != 4)
+        {
+            cout << "Please enter date(format: Jan 01 2017): ";
+            cin >> mon >> day >> year;
 
+            if(mon.length() == 3 && day.length() == 2 && year.length() == 4)
+                break;
+        }
+
+            cout << "************************************************************************************************************************" << endl;
+            cout << "                                                    Account Information                                                 " << endl;
+            cout << "************************************************************************************************************************" << endl;
+            cout << "Account No." << setw(17) << "Account Type" << setw(15) << "Name" << setw(24) << "Phone Number"
+                 << setw(14) << "Amount" << setw(20) << "Date Created" << endl;
+            cout << "************************************************************************************************************************" << endl;
+
+            for(unsigned int i = 0; i < tran.size() ; ++i)
+            {
+                if(foundDay(tran, mon, day, year) != -1)
+                {
+                    string name;
+
+                    val = foundDay(tran, mon, day, year);
+
+                    name = acc.at(val).firstName + " " + acc.at(val).lastName;
+
+                    cout << setw(5) << right << acc.at(val).accountId;
+                    cout << setw(22) << right << acc.at(val).accountType;
+                    cout << setw(20) << right << name;
+                    cout << setw(18) << right << acc.at(val).phoneNumber;
+                    cout << setw(15) << right << acc.at(val).amount;
+                    cout << setw(12) << right << acc.at(val).month << " " << acc.at(val).day << " " <<  acc.at(val).year << endl;
+                }
+
+            }
+            if(foundDay(tran, mon, day, year) == -1)
+            {
+                cout << "Record was not found" << endl;
+            }
     }
     if(opt>2 || opt<1)
         cout << "Please enter a valid option" << endl;
@@ -975,11 +1522,11 @@ void searchAcc(vector<account> acc, vector<loans> loan)
 
     if(num == 0)
     {
-        mainMenu(acc, loan);
+        mainMenu(acc, loan, tran);
     }
 }
 
-//returns index to display account
+///Angel
 int foundAcc(vector<account>& acc, int accNum)
 {
 
@@ -991,8 +1538,36 @@ int foundAcc(vector<account>& acc, int accNum)
     return -1;
 }
 
-//Transfer loans based on social security entered can be changed to anything else
-void transferAcc(vector<account>& acc, vector<loans>& loan)
+///Taylor
+int foundTran(vector<transaction>& tran, int tranNum)
+{
+        int counter = 0;
+
+        for(int i=0; i < tran.size(); i++)
+        {
+            if(tran.at(i).accountID == tranNum)
+
+                counter++;
+
+        }
+
+    return counter;
+
+}
+
+///Angel
+int foundDay(vector<transaction>& tran, string mon, string day, string year)
+{
+    for(int i=0; i < tran.size(); i++)
+        {
+            if(tran.at(i).month == mon && tran.at(i).day == day && tran.at(i).year == year)
+                return i;
+        }
+    return -1;
+}
+
+///Angel
+void transferAcc(vector<account>& acc, vector<loans>& loan, vector<transaction>& tran)
 {
     int accNo1;
     int accNo2;
@@ -1051,7 +1626,7 @@ void transferAcc(vector<account>& acc, vector<loans>& loan)
 
     if(num == 0)
     {
-        mainMenu(acc, loan);
+        mainMenu(acc, loan, tran);
     }
 
 }
