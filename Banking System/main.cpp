@@ -25,25 +25,45 @@ struct account
     int amount;
 };
 
+struct transaction
+{
+    string firstName;
+    string lastName;
+    int transactionID = 0;
+    int accountID;
+    string transactionType;
+    string month;
+    string day;
+    string year;
+    int amount;
+
+};
+
 string ACCOUNTFILENAME = "accounts.txt";
+string TRANFILENAME = "transactions.txt";
 
 int welcomeScreen(int counter);
 void devScreen();
-void mainMenu(vector<account>& acc);
-void selectMenu(int opt, vector<account>& acc);
+void mainMenu(vector<account>& acc, vector<transaction> tran);
+void selectMenu(int opt, vector<account>& acc, vector<transaction> tran);
 void getAccounts(vector<account>& acc);
-void openAccount(vector<account>& acc);
-void saveAccounts(vector<account>& acc);
-void despositAmount(vector<account>& acc);
-void withdrawAmount();
-void displayAccounts(vector<account>& acc);
-void displayTransactions();
+void getTransactions(vector<transaction>& tran);
+void openAccount(vector<account>& acc, vector<transaction> tran);
+void saveAccounts(vector<account>& acc, vector<transaction>& tran);
+void saveTransactions(vector<account>& acc, vector<transaction>& tran);
+void depositAmount(vector<account>& acc, vector<transaction>& tran);
+void withdrawAmount(vector<account>& acc, vector<transaction>& tran);
+void displayAccounts(vector<account> acc, vector<transaction> tran);
+void displayTransactions(vector<account>& acc, vector<transaction> tran);
 void checkStrings(string str);
+int foundAcc(vector<account>& acc, int accNum);
+int foundTran(vector<transaction>& tran, int tranNum);
 
 int main()
 {
 
     vector<account> accounts;
+    vector<transaction> transactions;
 
     int option;
     int i = 0;
@@ -52,6 +72,7 @@ int main()
     if(existFile)
     {
         getAccounts(accounts);
+        getTransactions(transactions);
     }
 
     do
@@ -63,7 +84,7 @@ int main()
         }
         if((option == 2 && i == 0) || (option == 1 && i != 0))
         {
-            mainMenu(accounts);
+            mainMenu(accounts, transactions);
             option = 99;
         }
         i++;
@@ -107,7 +128,7 @@ void devScreen()
     return;
 }
 
-void mainMenu(vector<account>& acc)
+void mainMenu(vector<account>& acc, vector<transaction> tran)
 {
     int option;
 
@@ -130,36 +151,40 @@ void mainMenu(vector<account>& acc)
     cout << "Select an option: " << endl;
     cin >> option;
 
-    selectMenu(option, acc);
+    selectMenu(option, acc, tran);
 
     return;
 }
 
-void selectMenu(int opt, vector<account>& acc)
+void selectMenu(int opt, vector<account>& acc, vector<transaction> tran)
 {
 
     if(opt == 1)
     {
-        openAccount(acc);
-        saveAccounts(acc);
+        openAccount(acc, tran);
+        saveAccounts(acc,tran);
+        saveTransactions(acc,tran);
     }
-    /*
+
     if (opt == 2)
     {
-        depositAmount();
+        depositAmount(acc, tran);
+        saveAccounts(acc,tran);
+        saveTransactions(acc,tran);
     }
     if(opt == 3)
     {
-        withdrawAmount();
-    }*/
+        withdrawAmount(acc, tran);
+        saveAccounts(acc,tran);
+    }
     if(opt == 4)
     {
-        displayAccounts(acc);
-    }/*
+        //displayAccounts(acc, tran);
+    }
     if(opt == 5)
     {
-        displayTransactions();
-    }*/
+        displayTransactions(acc,tran);
+    }
 
     return;
 }
@@ -193,8 +218,36 @@ void getAccounts(vector<account>& acc)
 
     return;
 }
+void getTransactions(vector<transaction>& tran)
+{
+    ifstream inFile;
+    transaction tmpp;
+
+    inFile.open(TRANFILENAME.c_str());
+
+    while(!inFile.eof())
+    {
+        inFile >> tmpp.accountID;
+        inFile >> tmpp.transactionType;
+        inFile >> tmpp.firstName;
+        inFile >> tmpp.lastName;
+        inFile >> tmpp.amount;
+        inFile >> tmpp.month;
+        inFile >> tmpp.day;
+        inFile >> tmpp.year;
+        inFile.ignore(1000,'\n');
+        inFile.ignore(1000,'\n');
+
+        tran.push_back(tmpp);
+    }
+
+    inFile.close();
+
+    return;
+}
+
 //Function by Taylor Martinez. The function opens a new account. User must input data into string or numeric fields.
-void openAccount(vector<account>& acc)
+void openAccount(vector<account>& acc, vector<transaction> tran)
 {
     account tmp;
     string str;
@@ -307,7 +360,7 @@ void openAccount(vector<account>& acc)
 
     acc.push_back(tmp);
 
-    saveAccounts(acc);
+    saveAccounts(acc,tran);
 
     cout << endl << "Account has been made" << endl;
 
@@ -317,14 +370,14 @@ void openAccount(vector<account>& acc)
 
     if(num == 0)
     {
-        mainMenu(acc);
+        mainMenu(acc, tran);
     }
 
     return;
 
 }
 
-void saveAccounts(vector<account>& acc)
+void saveAccounts(vector<account>& acc, vector<transaction>& tran)
 {
     ofstream outFile;
 
@@ -350,17 +403,163 @@ void saveAccounts(vector<account>& acc)
     return;
 }
 
-void despositAmount(vector<account>& acc)
+void saveTransactions(vector<account>& acc, vector<transaction>& tran)
 {
+    ofstream outFile;
+
+    outFile.open(TRANFILENAME.c_str());
+
+    for(int i = 0; i < tran.size(); ++i)
+    {
+        outFile << tran.at(i).accountID << " "
+        << tran.at(i).transactionID << " "
+        << tran.at(i).transactionType << " "
+        << tran.at(i).firstName << " "
+        << tran.at(i).amount << " "
+        << tran.at(i).month << " "
+        << tran.at(i).day << " "
+        << tran.at(i).year << endl;
+    }
+
+    outFile.close();
+
+    return;
+}
+
+void depositAmount(vector<account>& acc, vector<transaction>& tran)
+{
+    int ID;
+    int num;
+    int numID;
+    int deposit;
+    string str;
+    transaction tmp;
+
+
     system("cls");
+    cout << "Enter the ID of the account you wish to deposit money to: " << endl;
+    cin >> numID;
+
+    ID = foundAcc(acc, numID);
+
+    cout << "Account Holder's Name: " << acc.at(ID).firstName + " " + acc.at(ID).lastName << endl;
+    cout << "Account Balance: " << acc.at(ID).amount << endl;
+    cout << endl << "Enter Amount you wish to deposit: " << endl;
+    cin >> deposit;
+
+    acc.at(ID).amount += deposit;
+
+    cout << endl << "New Balance: " <<  acc.at(ID).amount << endl;
+
+    tmp.firstName = acc.at(ID).firstName;
+    tmp.lastName =acc.at(ID).lastName;
+
+    if(foundTran(tran,numID) != 0)
+    {
+        tmp.transactionID = foundTran(tran,numID) + 1;
+    }
+    else
+    {
+        tmp.transactionID++;
+    }
+
+    tmp.accountID = acc.at(ID).accountId;
+
+    tmp.transactionType = "Deposit";
+
+    //Date
+    time_t now;
+    struct tm * today;
+
+    time(&now);
+    today = localtime(&now);
+
+    str = asctime(today);
+
+    tmp.month = str.substr(4,3);
+    tmp.day = str.substr(8,2);
+    tmp.year = str.substr(20,4);
+
+    tmp.amount = deposit;
+
+    tran.push_back(tmp);
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+
+    if(num == 0)
+    {
+        mainMenu(acc, tran);
+    }
+
+    return;
 
 }
-void withdrawAmount(vector<account>& acc)
+void withdrawAmount(vector<account>& acc, vector<transaction>& tran)
 {
+    int ID;
+    int num;
+    int numID;
+    string str;
+    int withdrawal;
+    transaction tmp;
 
+
+    system("cls");
+    cout << "Enter the ID of the account you wish to withdraw money from: " << endl;
+    cin >> numID;
+
+    ID = foundAcc(acc, numID);
+
+    cout << "Account Holder's Name: " << acc.at(ID).firstName + " " + acc.at(ID).lastName << endl;
+    cout << "Account Balance: " << acc.at(ID).amount << endl;
+    cout << endl << "Enter Amount you wish to withdraw: " << endl;
+    cin >> withdrawal;
+
+    acc.at(ID).amount -= withdrawal;
+
+    cout << endl << "New Balance: " <<  acc.at(ID).amount << endl;
+
+    tmp.firstName = acc.at(ID).firstName;
+    tmp.lastName = acc.at(ID).lastName;
+
+    tmp.transactionID++;
+    tmp.accountID = acc.at(ID).accountId;
+
+    tmp.transactionType = "Deposit";
+
+    //Date
+    time_t now;
+    struct tm * today;
+
+
+    time(&now);
+    today = localtime(&now);
+
+    str = asctime(today);
+
+    tmp.month = str.substr(4,3);
+    tmp.day = str.substr(8,2);
+    tmp.year = str.substr(20,4);
+
+    tmp.amount = withdrawal;
+
+    tran.push_back(tmp);
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+
+    if(num == 0)
+    {
+        mainMenu(acc, tran);
+    }
+
+    return;
 }
 
-void displayAccounts(vector<account>& acc)
+void displayAccounts(vector<account>& acc, vector<transaction> tran)
 {
     int num;
 
@@ -388,7 +587,30 @@ void displayAccounts(vector<account>& acc)
 
     if(num == 0)
     {
-        mainMenu(acc);
+        mainMenu(acc, tran);
+    }
+}
+void displayTransactions(vector<account>& acc, vector<transaction> tran)
+{
+    int num;
+
+    system("cls");
+    for(unsigned int i = 0; i < tran.size(); ++i)
+    {
+        cout << tran.at(i).accountID << " "
+        << tran.at(i).transactionID << " "
+        << tran.at(i).transactionType << " "
+        << tran.at(i).firstName << " " << tran.at(i).lastName << " "
+        << tran.at(i).amount << " "
+        << tran.at(i).month << " " << tran.at(i).day << " " <<  tran.at(i).year << endl;
+    }
+
+    cout << "Press 0 if you wish return to the main menu" << endl;
+    cin >> num;
+
+    if(num == 0)
+    {
+        mainMenu(acc, tran);
     }
 }
 
@@ -419,4 +641,34 @@ void checkStrings(string str)
     }
 
     return;
+}
+int foundAcc(vector<account>& acc, int accNum)
+{
+        for(int i=0; i < acc.size(); i++)
+
+        {
+
+            if(acc.at(i).accountId == accNum)
+
+                return i;
+
+        }
+
+    return -1;
+
+}
+int foundTran(vector<transaction>& tran, int tranNum)
+{
+        int counter = 0;
+
+        for(int i=0; i < tran.size(); i++)
+        {
+            if(tran.at(i).accountID == tranNum)
+
+                counter++;
+
+        }
+
+    return counter;
+
 }
